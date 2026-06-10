@@ -10,28 +10,79 @@ class PantallaTareasUITest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    @Test
-    fun test_flujoCompletoDeUI() {
-        // Lanzamos la pantalla de la App
-        composeTestRule.setContent {
-            PantallaTareas()
-        }
+    /**
+     * Actividad 5: Casos de Prueba de UI
+     */
 
-        // 1. Campo de entrada acepta texto correctamente y el botón responde al click
-        composeTestRule.onNodeWithTag("input_tarea").performTextInput("Aprender Espresso")
+    @Test
+    fun campoEntrada_aceptaTextoCorrectamente() {
+        composeTestRule.setContent { PantallaTareas() }
+        
+        val textoPrueba = "Tarea de Prueba"
+        composeTestRule.onNodeWithTag("input_tarea").performTextInput(textoPrueba)
+        
+        // Verificamos que el texto esté presente en el campo
+        composeTestRule.onNodeWithTag("input_tarea").assertTextContains(textoPrueba)
+    }
+
+    @Test
+    fun agregarTarea_apareceEnPantalla_y_botonRespondeAlClic() {
+        composeTestRule.setContent { PantallaTareas() }
+
+        val tituloTarea = "Nueva Tarea UI"
+        
+        // Campo de entrada acepta texto
+        composeTestRule.onNodeWithTag("input_tarea").performTextInput(tituloTarea)
+        
+        // Botón Agregar responde al clic
         composeTestRule.onNodeWithTag("btn_agregar").performClick()
 
-        // 2. Agregar tarea: La tarea aparece en pantalla
-        composeTestRule.onNodeWithText("Aprender Espresso").assertExists()
+        // La tarea aparece en pantalla
+        composeTestRule.onNodeWithText(tituloTarea).assertExists()
+    }
 
-        // 3. Mostrar pendientes: La cantidad es correcta
-        // El formato en la UI es "X tareas por completar"
-        composeTestRule.onNodeWithTag("txt_pendientes").assertTextEquals("1 tareas por completar")
+    @Test
+    fun eliminarTarea_desapareceDeLaLista() {
+        composeTestRule.setContent { PantallaTareas() }
 
-        // 4. Eliminar tarea: La tarea desaparece de la lista
-        // Como es el ID 1, el tag dinámico del botón es btn_eliminar_1
+        // Agregamos una tarea primero
+        val titulo = "Tarea a eliminar"
+        composeTestRule.onNodeWithTag("input_tarea").performTextInput(titulo)
+        composeTestRule.onNodeWithTag("btn_agregar").performClick()
+        
+        // Verificamos que existe
+        composeTestRule.onNodeWithText(titulo).assertExists()
+
+        // Eliminamos la tarea (asumiendo ID 1 para la primera tarea)
         composeTestRule.onNodeWithTag("btn_eliminar_1").performClick()
-        composeTestRule.onNodeWithText("Aprender Espresso").assertDoesNotExist()
+
+        // La tarea desaparece de la lista
+        composeTestRule.onNodeWithText(titulo).assertDoesNotExist()
+    }
+
+    @Test
+    fun mostrarPendientes_laCantidadEsCorrecta() {
+        composeTestRule.setContent { PantallaTareas() }
+
+        // Inicialmente 0
         composeTestRule.onNodeWithTag("txt_pendientes").assertTextEquals("0 tareas por completar")
+
+        // Agregamos una
+        composeTestRule.onNodeWithTag("input_tarea").performTextInput("Tarea 1")
+        composeTestRule.onNodeWithTag("btn_agregar").performClick()
+
+        // Verificamos cantidad 1
+        composeTestRule.onNodeWithTag("txt_pendientes").assertTextEquals("1 tareas por completar")
+        
+        // Agregamos otra
+        composeTestRule.onNodeWithTag("input_tarea").performTextInput("Tarea 2")
+        composeTestRule.onNodeWithTag("btn_agregar").performClick()
+        
+        // Verificamos cantidad 2
+        composeTestRule.onNodeWithTag("txt_pendientes").assertTextEquals("2 tareas por completar")
+        
+        // Completamos una para ver si baja el contador (opcional pero bueno para la lógica)
+        composeTestRule.onNodeWithTag("check_1").performClick()
+        composeTestRule.onNodeWithTag("txt_pendientes").assertTextEquals("1 tareas por completar")
     }
 }

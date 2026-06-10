@@ -1,15 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+
 }
 
 android {
     namespace = "ni.edu.uam.gesiondetareas"
-    compileSdk {
-        version = release(37) {
-            minorApiLevel = 0
-        }
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "ni.edu.uam.gesiondetareas"

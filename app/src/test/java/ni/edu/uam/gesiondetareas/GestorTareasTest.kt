@@ -14,6 +14,8 @@ class GestorTareasTest {
         gestor = GestorTareas()
     }
 
+    // --- Parte II. Pruebas Unitarias Obligatorias (Actividad 4) ---
+
     @Test
     fun agregarTarea_LaListaIncrementaEnUno() {
         gestor.agregarTarea("Estudiar Kotlin")
@@ -42,7 +44,7 @@ class GestorTareasTest {
         val t2 = gestor.agregarTarea("T2")
         gestor.agregarTarea("T3")
         gestor.marcarComoCompletada(t2!!.id)
-        
+
         // Deberían quedar 2 pendientes
         assertEquals(2, gestor.contarTareasPendientes())
     }
@@ -52,23 +54,32 @@ class GestorTareasTest {
         assertEquals(0, gestor.contarTareasPendientes())
     }
 
-    /**
-     * ACTIVIDAD 6: Prueba Negativa
-     * Esta prueba falla intencionalmente al intentar verificar que el porcentaje es 100% 
-     * en una lista vacía.
-     * 
-     * Por qué falla: El método obtenerPorcentajeCompletadas() devuelve 0f cuando no hay tareas,
-     * pero el test espera 100f.
-     * Resultado esperado: La prueba falla (AssertionError).
-     * Cómo corregir: Se debe cambiar el valor esperado a 0f en el assertEquals.
-     */
+
+    // --- Parte V. Actividad 7: Reto Adicional ---
+
     @Test
-    fun testNegativo_FallaIntencionalmente() {
-        val porcentaje = gestor.obtenerPorcentajeCompletadas()
-        // Para que la prueba falle (Actividad 6), descomenta la siguiente línea:
-        // assertEquals("Error esperado: Porcentaje no es 100 en lista vacía", 100f, porcentaje)
-        
-        // Validación correcta para asegurar que el build no se detenga por defecto:
-        assertEquals(6, porcentaje)
+    fun obtenerTareasOrdenadasAlfabeticamente_RetornaListaCorrecta() {
+        // Con la corrección del Collator, el orden será Árbol -> Barco -> Zebra
+        gestor.agregarTarea("Zebra")
+        gestor.agregarTarea("Árbol")
+        gestor.agregarTarea("Barco")
+
+        val listaOrdenada = gestor.obtenerTareasOrdenadasAlfabeticamente()
+
+        assertEquals("Árbol", listaOrdenada[0].titulo)
+        assertEquals("Barco", listaOrdenada[1].titulo)
+        assertEquals("Zebra", listaOrdenada[2].titulo)
+    }
+
+    @Test
+    fun obtenerPorcentajeCompletadas_CalculaValorExacto() {
+        gestor.agregarTarea("T1")
+        val t2 = gestor.agregarTarea("T2")
+        gestor.agregarTarea("T3")
+        gestor.agregarTarea("T4")
+
+        gestor.marcarComoCompletada(t2!!.id) // 1 de 4 = 25%
+
+        assertEquals(25f, gestor.obtenerPorcentajeCompletadas())
     }
 }

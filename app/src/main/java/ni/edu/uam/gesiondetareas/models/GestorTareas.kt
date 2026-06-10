@@ -1,8 +1,11 @@
 package ni.edu.uam.gesiondetareas.models
 
+import java.text.Collator
+import java.util.Locale
+
 class GestorTareas {
     private val _listaTareas = mutableListOf<Tarea>()
-    val listaTareas: List<Tarea> get() = _listaTareas
+    val listaTareas: List<Tarea> get() = _listaTareas.toList()
 
     private var contadorId = 1
 
@@ -31,7 +34,11 @@ class GestorTareas {
 
     fun contarTareasPendientes(): Int = _listaTareas.count { !it.esCompletada }
 
-    fun obtenerTareasOrdenadasAlfabeticamente(): List<Tarea> = _listaTareas.sortedBy { it.titulo.lowercase() }
+    fun obtenerTareasOrdenadasAlfabeticamente(): List<Tarea> {
+        val collator = Collator.getInstance(Locale.forLanguageTag("es"))
+        collator.strength = Collator.PRIMARY
+        return _listaTareas.sortedWith { t1, t2 -> collator.compare(t1.titulo, t2.titulo) }
+    }
 
     fun obtenerPorcentajeCompletadas(): Float {
         if (_listaTareas.isEmpty()) return 0f
